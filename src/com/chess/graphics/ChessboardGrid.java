@@ -125,7 +125,7 @@ public class ChessboardGrid extends JFrame {
     private boolean isValidMove(int destRow, int destCol) {
 
         if(boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() != boardData.boardSquares[destRow][destCol].getTeamOccupied()){
-            System.out.println("good to go");
+
             if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "knight") {
                 int rowDelta = Math.abs(destRow - currentSelectedY);
                 int colDelta = Math.abs(destCol - currentSelectedX);
@@ -140,6 +140,18 @@ public class ChessboardGrid extends JFrame {
             }
 
             if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "rook"){
+                int rowDelta = Math.abs(destRow - currentSelectedY);
+                int colDelta = Math.abs(destCol - currentSelectedX);
+                if(rowDelta == 0){
+                    return true;
+                }
+                if(colDelta == 0){
+                    return true;
+                }
+            }
+
+
+            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn") {
 
             }
 

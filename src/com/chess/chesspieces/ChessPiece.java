@@ -10,8 +10,9 @@ public class ChessPiece {
     }
 
     public class Bishop{
-        public String icon = "src/com/chess/images/black_pieces/Bishop.png";
-        String chessPieceName = "bishop";
+        public String iconDestinationBlack = "src/com/chess/images/black_pieces/Bishop.png";
+        public String iconDestinationWhite = "src/com/chess/images/white_pieces/Bishop.png";
+        public String chessPieceName = "bishop";
     }
     public static class Rook{
         public String iconDestinationBlack = "src/com/chess/images/black_pieces/Rook.png";

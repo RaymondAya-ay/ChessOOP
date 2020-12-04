@@ -25,6 +25,7 @@ public class Board {
     private void addBlackTeam() {
         ChessPiece.Knight knight = new ChessPiece.Knight();
         ChessPiece.Rook rook = new ChessPiece.Rook();
+
         boardSquares[0][1].setPieceOccupied(knight.chessPieceName); boardSquares[0][1].iconData = new ImageIcon(knight.iconDestinationBlack);
         boardSquares[0][1].setOccupied(true); boardSquares[0][1].setTeamOccupied("black");
 
@@ -49,7 +50,7 @@ public class Board {
         boardSquares[7][6].setOccupied(true); boardSquares[7][6].setTeamOccupied("white");
 
         boardSquares[7][0].setPieceOccupied(rook.chessPieceName); boardSquares[7][0].iconData = new ImageIcon(rook.iconDestinationWhite);
-        boardSquares[7][0].setOccupied(true); boardSquares[0][0].setTeamOccupied("white");
+        boardSquares[7][0].setOccupied(true); boardSquares[7][0].setTeamOccupied("white");
 
     }
 }
