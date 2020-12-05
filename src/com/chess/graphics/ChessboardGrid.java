@@ -1,5 +1,6 @@
 package com.chess.graphics;
 import com.chess.board.Board;
+import com.chess.squares.Square;
 import com.chess.squares.SquareColor;
 
 import javax.swing.*;
@@ -140,14 +141,32 @@ public class ChessboardGrid extends JFrame {
             }
 
             if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "rook"){
-                int rowDelta = Math.abs(destRow - currentSelectedY);
-                int colDelta = Math.abs(destCol - currentSelectedX);
-                if(rowDelta == 0){
+               String direction="none";
+                if(currentSelectedY<destRow){
+                    direction="south";
+                }
+                if(currentSelectedY>destRow){
+                    direction="north";
+                }
+                if(currentSelectedX<destCol){
+                    direction="east";
+                }
+                if(currentSelectedX<destCol){
+                    direction="west";
+                }
+                if(direction=="south") {
+                    int spacesToMove = Math.abs(destRow - currentSelectedY);
+                    Square p = new Square();
+                    for (int i = 1; i < spacesToMove; i++) {
+                        p = boardData.boardSquares[currentSelectedY + i][currentSelectedX];
+                        if(p.isOccupied()==true){
+                            return false;
+                        }
+
+                    }
                     return true;
                 }
-                if(colDelta == 0){
-                    return true;
-                }
+
             }
 
 
@@ -158,7 +177,7 @@ public class ChessboardGrid extends JFrame {
         }
 
 
-        return false;
+       return false;
 
 
     }
