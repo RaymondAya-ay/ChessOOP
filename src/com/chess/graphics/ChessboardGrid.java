@@ -210,7 +210,80 @@ public class ChessboardGrid extends JFrame {
             }
             /// ///
             if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "bishop"){
+                int XspacesToMove = Math.abs(destCol - currentSelectedX);
+                int YspacesToMove = Math.abs(destRow - currentSelectedY);
+                if(XspacesToMove==YspacesToMove) {
+                    String direction = "none";
+                    if (currentSelectedY < destRow && currentSelectedX < destCol) {
+                        direction = "southeast";
+                    }
+                    if (currentSelectedY < destRow && currentSelectedX > destCol) {
+                        direction = "southwest";
+                    }
+                    if (currentSelectedY > destRow && currentSelectedX > destCol) {
+                        direction = "northwest";
+                    }
+                    if (currentSelectedY > destRow && currentSelectedX < destCol) {
+                        direction = "northeast";
+                    }
+                    if (direction == "southeast") {
+                        int spacesToMove = Math.abs(destCol - currentSelectedX);
+                        Square p = new Square();
+                        for (int i = 1; i < XspacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX + i];
+                            if (p.isOccupied() == true) {
+                                return false;
+                            }
 
+                        }
+
+                        return true;
+                    }
+                    if (direction == "southwest") {
+
+                        Square p = new Square();
+                        for (int i = 1; i < XspacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX - i];
+                            if (p.isOccupied() == true) {
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+                    }
+                    if (direction == "northwest") {
+
+                        Square p = new Square();
+                        for (int i = 1; i < XspacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX - i];
+                            if (p.isOccupied() == true) {
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+                    }
+                    if (direction == "northeast") {
+
+                        Square p = new Square();
+
+                        for (int i = 1; i < XspacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX + i];
+                            if (p.isOccupied() == true) {
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+
+                    }
+                }
+
+            }
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "queen"){
                 String direction="none";
                 if(currentSelectedY<destRow&&currentSelectedX<destCol){
                     direction="southeast";
@@ -223,58 +296,133 @@ public class ChessboardGrid extends JFrame {
                 }
                 if(currentSelectedY>destRow&&currentSelectedX<destCol){
                     direction="northeast";
+                } if(currentSelectedY<destRow&&currentSelectedX==destCol){
+                    direction="south";
+                }
+                if(currentSelectedY>destRow&&currentSelectedX==destCol){
+                    direction="north";
+                }
+                if(currentSelectedX<destCol&&currentSelectedY==destRow){
+                    direction="east";
+                }
+                if(currentSelectedX>destCol&&currentSelectedY==destRow){
+                    direction="west";
+                }
+                if(direction=="south") {
+                    int spacesToMove = Math.abs(destRow - currentSelectedY);
+                    Square p = new Square();
+                    for (int i = 1; i < spacesToMove; i++) {
+                        p = boardData.boardSquares[currentSelectedY + i][currentSelectedX];
+                        if(p.isOccupied()==true){
+                            return false;
+                        }
+
+                    }
+
+                    return true;
+                }
+                if(direction=="north") {
+                    int spacesToMove = Math.abs(destRow - currentSelectedY);
+                    Square p;
+                    for (int i = 1; i < spacesToMove; i++) {
+                        p = boardData.boardSquares[currentSelectedY - i][currentSelectedX];
+                        if(p.isOccupied()==true){
+                            return false;
+                        }
+
+                    }
+
+                    return true;
+                }
+                if(direction=="east") {
+                    int spacesToMove = Math.abs(destCol - currentSelectedX);
+                    Square p = new Square();
+                    for (int i = 1; i < spacesToMove; i++) {
+                        p = boardData.boardSquares[currentSelectedY][currentSelectedX+i];
+                        if(p.isOccupied()==true){
+                            return false;
+                        }
+
+                    }
+
+                    return true;
+                }
+                if(direction=="west") {
+                    int spacesToMove = Math.abs(destCol - currentSelectedX);
+                    Square p = new Square();
+                    for (int i = 1; i < spacesToMove; i++) {
+                        p = boardData.boardSquares[currentSelectedY][currentSelectedX-i];
+                        if(p.isOccupied()==true){
+                            return false;
+                        }
+
+                    }
+
+                    return true;
                 }
                 if(direction=="southeast") {
-                    int spacesToMove = Math.abs(destCol - currentSelectedX);
+                    int XspacesToMove = Math.abs(destCol - currentSelectedX);
+                    int YspacesToMove = Math.abs(destRow - currentSelectedY);
                     Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY+i][currentSelectedX+i];
-                        if(p.isOccupied()==true){
-                            return false;
+                    if(XspacesToMove==YspacesToMove) {
+                        for (int i = 1; i < XspacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX + i];
+                            if (p.isOccupied() == true) {
+                                return false;
+                            }
+
                         }
 
+                        return true;
                     }
-
-                    return true;
                 }
                 if(direction=="southwest") {
-                    int spacesToMove = Math.abs(destCol - currentSelectedX);
+                    int XspacesToMove = Math.abs(destCol - currentSelectedX);
+                    int YspacesToMove = Math.abs(destRow - currentSelectedY);
                     Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY+i][currentSelectedX-i];
-                        if(p.isOccupied()==true){
-                            return false;
+                    if(XspacesToMove==YspacesToMove) {
+                        for (int i = 1; i < XspacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX - i];
+                            if (p.isOccupied() == true) {
+                                return false;
+                            }
+
                         }
 
+                        return true;
                     }
-
-                    return true;
                 }
                 if(direction=="northwest") {
-                    int spacesToMove = Math.abs(destCol - currentSelectedX);
+                    int XspacesToMove = Math.abs(destCol - currentSelectedX);
+                    int YspacesToMove = Math.abs(destRow - currentSelectedY);
                     Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY-i][currentSelectedX-i];
-                        if(p.isOccupied()==true){
-                            return false;
+                    if(XspacesToMove==YspacesToMove) {
+                        for (int i = 1; i < XspacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX - i];
+                            if (p.isOccupied() == true) {
+                                return false;
+                            }
+
                         }
 
+                        return true;
                     }
-
-                    return true;
                 }
                 if(direction=="northeast") {
-                    int spacesToMove = Math.abs(destCol - currentSelectedX);
+                    int XspacesToMove = Math.abs(destCol - currentSelectedX);
+                    int YspacesToMove = Math.abs(destRow - currentSelectedY);
                     Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY-i][currentSelectedX+i];
-                        if(p.isOccupied()==true){
-                            return false;
+                    if(XspacesToMove==YspacesToMove) {
+                        for (int i = 1; i < XspacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX + i];
+                            if (p.isOccupied() == true) {
+                                return false;
+                            }
+
                         }
 
+                        return true;
                     }
-
-                    return true;
                 }
 
             }

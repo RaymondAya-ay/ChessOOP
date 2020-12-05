@@ -43,6 +43,7 @@ public class Board {
         ChessPiece.Knight knight = new ChessPiece.Knight();
         ChessPiece.Rook rook = new ChessPiece.Rook();
         ChessPiece.Bishop bishop = new ChessPiece.Bishop();
+        ChessPiece.Queen queen = new ChessPiece.Queen();
         boardSquares[7][1].setPieceOccupied(knight.chessPieceName); boardSquares[7][1].iconData = new ImageIcon(knight.iconDestinationWhite);
         boardSquares[7][1].setOccupied(true); boardSquares[7][1].setTeamOccupied("white");
 
@@ -52,8 +53,11 @@ public class Board {
         boardSquares[7][0].setPieceOccupied(rook.chessPieceName); boardSquares[7][0].iconData = new ImageIcon(rook.iconDestinationWhite);
         boardSquares[7][0].setOccupied(true); boardSquares[7][0].setTeamOccupied("white");
 
-        boardSquares[5][2].setPieceOccupied(bishop.chessPieceName); boardSquares[5][2].iconData = new ImageIcon(bishop.iconDestinationWhite);
-        boardSquares[5][2].setOccupied(true); boardSquares[5][2].setTeamOccupied("white");
+        boardSquares[7][2].setPieceOccupied(bishop.chessPieceName); boardSquares[7][2].iconData = new ImageIcon(bishop.iconDestinationWhite);
+        boardSquares[7][2].setOccupied(true); boardSquares[7][2].setTeamOccupied("white");
+
+        boardSquares[7][3].setPieceOccupied(queen.chessPieceName); boardSquares[7][3].iconData = new ImageIcon(queen.iconDestinationWhite);
+        boardSquares[7][3].setOccupied(true); boardSquares[7][3].setTeamOccupied("white");
 
     }
 }

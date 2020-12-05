@@ -19,13 +19,14 @@ public class ChessPiece {
         public String iconDestinationWhite = "src/com/chess/images/white_pieces/Rook.png";
         public String chessPieceName = "rook";
     }
-    public class King{
+    public static class King{
         public ImageIcon icon = new ImageIcon("src/com/chess/images/black_pieces/King.png");
         String chessPieceName = "king";
     }
-    public class Queen{
-        public ImageIcon icon = new ImageIcon("src/com/chess/images/black_pieces/Queen.png");
-        String chessPieceName = "queen";
+    public static class Queen{
+        public String iconDestinationBlack = "src/com/chess/images/black_pieces/Queen.png";
+        public String iconDestinationWhite = "src/com/chess/images/white_pieces/Queen.png";
+        public String chessPieceName = "queen";
     }
     public class Pawn{
         public ImageIcon icon = new ImageIcon("src/com/chess/images/black_pieces/Pawn.png");
