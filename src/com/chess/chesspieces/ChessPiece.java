@@ -20,8 +20,11 @@ public class ChessPiece {
         public String chessPieceName = "rook";
     }
     public static class King{
-        public ImageIcon icon = new ImageIcon("src/com/chess/images/black_pieces/King.png");
-        String chessPieceName = "king";
+        public String iconDestinationBlack = "src/com/chess/images/black_pieces/King.png";
+        public String iconDestinationWhite = "src/com/chess/images/white_pieces/King.png";
+        public String chessPieceName = "king";
+
+
     }
     public static class Queen{
         public String iconDestinationBlack = "src/com/chess/images/black_pieces/Queen.png";

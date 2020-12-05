@@ -427,8 +427,12 @@ public class ChessboardGrid extends JFrame {
 
             }
             /// ///
-            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn") {
-
+            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "king") {
+                int xDistance = Math.abs(destCol - currentSelectedX);
+                int yDistance = Math.abs(destRow - currentSelectedY);
+                if(xDistance<=1&&yDistance<=1){
+                    return true;
+                }
             }
 
         }
