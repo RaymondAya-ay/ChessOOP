@@ -25,7 +25,7 @@ public class Board {
     private void addBlackTeam() {
         ChessPiece.Knight knight = new ChessPiece.Knight();
         ChessPiece.Rook rook = new ChessPiece.Rook();
-
+        ChessPiece.Bishop bishop = new ChessPiece.Bishop();
         boardSquares[0][1].setPieceOccupied(knight.chessPieceName); boardSquares[0][1].iconData = new ImageIcon(knight.iconDestinationBlack);
         boardSquares[0][1].setOccupied(true); boardSquares[0][1].setTeamOccupied("black");
 
@@ -42,7 +42,7 @@ public class Board {
     private void addWhiteTeam() {
         ChessPiece.Knight knight = new ChessPiece.Knight();
         ChessPiece.Rook rook = new ChessPiece.Rook();
-
+        ChessPiece.Bishop bishop = new ChessPiece.Bishop();
         boardSquares[7][1].setPieceOccupied(knight.chessPieceName); boardSquares[7][1].iconData = new ImageIcon(knight.iconDestinationWhite);
         boardSquares[7][1].setOccupied(true); boardSquares[7][1].setTeamOccupied("white");
 
@@ -51,6 +51,9 @@ public class Board {
 
         boardSquares[7][0].setPieceOccupied(rook.chessPieceName); boardSquares[7][0].iconData = new ImageIcon(rook.iconDestinationWhite);
         boardSquares[7][0].setOccupied(true); boardSquares[7][0].setTeamOccupied("white");
+
+        boardSquares[5][2].setPieceOccupied(bishop.chessPieceName); boardSquares[5][2].iconData = new ImageIcon(bishop.iconDestinationWhite);
+        boardSquares[5][2].setOccupied(true); boardSquares[5][2].setTeamOccupied("white");
 
     }
 }

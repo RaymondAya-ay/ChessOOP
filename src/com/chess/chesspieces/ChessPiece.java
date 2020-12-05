@@ -9,10 +9,10 @@ public class ChessPiece {
         public String chessPieceName = "knight";
     }
 
-    public class Bishop{
+    public static class Bishop{
         public String iconDestinationBlack = "src/com/chess/images/black_pieces/Bishop.png";
         public String iconDestinationWhite = "src/com/chess/images/white_pieces/Bishop.png";
-        public String chessPieceName = "bishop";
+        public String chessPieceName= "bishop";
     }
     public static class Rook{
         public String iconDestinationBlack = "src/com/chess/images/black_pieces/Rook.png";
