@@ -88,8 +88,7 @@ public class ChessboardGrid extends JFrame {
                 currentSelectedY = destRow;
                 currentSelectedX = destCol;
                 selected = true;
-                System.out.printf("Team: %s Piece: %s at y: %d, x: %d is selected\n", boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied(), boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied(), currentSelectedY, currentSelectedX);
-//                System.out.printf("CurrentSelected Y: %d, CurrentSelected X: %d\n", currentSelectedY, currentSelectedX);
+                System.out.printf("Team: %s ,Piece: %s at y: %d, x: %d is selected\n", boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied(), boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied(), currentSelectedY, currentSelectedX);
             }
             else{
                 if (!isValidMove(destRow, destCol)) {
@@ -130,8 +129,6 @@ public class ChessboardGrid extends JFrame {
             if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "knight") {
                 int rowDelta = Math.abs(destRow - currentSelectedY);
                 int colDelta = Math.abs(destCol - currentSelectedX);
-//                System.out.printf("rowDelta = %d - %d\n", destRow, currentSelectedY);
-//                System.out.printf("colDelta = %d - %d\n", destCol, currentSelectedX);
                 if ((rowDelta == 1) && (colDelta == 2)) {
                     return true;
                 }
@@ -426,7 +423,7 @@ public class ChessboardGrid extends JFrame {
                 }
 
             }
-            /// ///
+
             if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "king") {
                 int xDistance = Math.abs(destCol - currentSelectedX);
                 int yDistance = Math.abs(destRow - currentSelectedY);
