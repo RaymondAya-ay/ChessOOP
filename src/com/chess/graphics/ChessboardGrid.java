@@ -19,7 +19,10 @@ public class ChessboardGrid extends JFrame {
     Color black = new Color(102, 51, 0);
     Color white = new Color(255, 204, 153);
 
+
     SquareColor currentColor = SquareColor.WHITE;
+
+    private String currentTeam = "white";
 
     public ChessboardGrid() {
         setTitle("Chess: fite me nub"); //Previous title was "This is a title"
@@ -111,6 +114,7 @@ public class ChessboardGrid extends JFrame {
                     boardData.boardSquares[currentSelectedY][currentSelectedX].setIconData(null);
                     squares[currentSelectedY][currentSelectedX].setIcon(null);
 
+                    currentTeam = (currentTeam.equals("white"))? "black": "white";
                 }
                 squares[currentSelectedY][currentSelectedX].setBorder(null);
                 selected = false;
@@ -124,7 +128,7 @@ public class ChessboardGrid extends JFrame {
 
     private boolean isValidMove(int destRow, int destCol) {
 
-        if(boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() != boardData.boardSquares[destRow][destCol].getTeamOccupied()){
+        if(currentTeam == boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() && boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() != boardData.boardSquares[destRow][destCol].getTeamOccupied()){
 
             if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "knight") {
                 int rowDelta = Math.abs(destRow - currentSelectedY);
@@ -136,7 +140,6 @@ public class ChessboardGrid extends JFrame {
                     return true;
                 }
             }
-
             if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "rook"){
                String direction="none";
                 if(currentSelectedY<destRow&&currentSelectedX==destCol){
@@ -205,7 +208,6 @@ public class ChessboardGrid extends JFrame {
                 }
 
             }
-            /// ///
             if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "bishop"){
                 int XspacesToMove = Math.abs(destCol - currentSelectedX);
                 int YspacesToMove = Math.abs(destRow - currentSelectedY);
@@ -423,7 +425,6 @@ public class ChessboardGrid extends JFrame {
                 }
 
             }
-
             if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "king") {
                 int xDistance = Math.abs(destCol - currentSelectedX);
                 int yDistance = Math.abs(destRow - currentSelectedY);
@@ -431,14 +432,16 @@ public class ChessboardGrid extends JFrame {
                     return true;
                 }
             }
-
 //            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn") {
 //                String direction = "none";
 //                if(currentSelectedY>destRow&&currentSelectedX==destCol){
 //                    direction="north";
 //                }
 //            }
+//
 //            NOTE: DOH KAYATA AT FIRST AKO GI BASE ANG MOVEMENT SA PAWNS SA KING ((except nga pwede siya maka take 2 steps kung iya first move kay going forward and en passant))
+
+
         }
 
        return false;
