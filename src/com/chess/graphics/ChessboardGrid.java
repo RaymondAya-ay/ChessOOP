@@ -22,7 +22,7 @@ public class ChessboardGrid extends JFrame {
     SquareColor currentColor = SquareColor.WHITE;
 
     public ChessboardGrid() {
-        setTitle("This is a title");
+        setTitle("Chess: fite me nub"); //Previous title was "This is a title"
 
         Container contents = getContentPane();
         contents.setLayout(new GridLayout(8, 8));
@@ -88,7 +88,7 @@ public class ChessboardGrid extends JFrame {
                 currentSelectedY = destRow;
                 currentSelectedX = destCol;
                 selected = true;
-                System.out.printf("Team: %s Piece: %s at y: %d, x: %d is selected\n", boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied(),boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied(), currentSelectedY, currentSelectedX);
+                System.out.printf("Team: %s Piece: %s at y: %d, x: %d is selected\n", boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied(), boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied(), currentSelectedY, currentSelectedX);
 //                System.out.printf("CurrentSelected Y: %d, CurrentSelected X: %d\n", currentSelectedY, currentSelectedX);
             }
             else{
@@ -101,12 +101,12 @@ public class ChessboardGrid extends JFrame {
                     boardData.boardSquares[currentSelectedY][currentSelectedX].setOccupied(false);
 
                     boardData.boardSquares[destRow][destCol].setTeamOccupied(boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied());
-                    boardData.boardSquares[currentSelectedY][currentSelectedX].setTeamOccupied("empty");
+                    boardData.boardSquares[currentSelectedY][currentSelectedX].setTeamOccupied("Empty");
 
                     boardData.boardSquares[destRow][destCol].setIconData(boardData.boardSquares[currentSelectedY][currentSelectedX].getIconData());
                     boardData.boardSquares[destRow][destCol].setPieceOccupied(boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied());
                     boardData.boardSquares[currentSelectedY][currentSelectedX].setIconData(null);
-                    boardData.boardSquares[currentSelectedY][currentSelectedX].setPieceOccupied("empty");
+                    boardData.boardSquares[currentSelectedY][currentSelectedX].setPieceOccupied("Empty");
 
                     squares[destRow][destCol].setIcon(squares[currentSelectedY][currentSelectedX].getIcon());
                     boardData.boardSquares[currentSelectedY][currentSelectedX].setIconData(null);
@@ -435,13 +435,21 @@ public class ChessboardGrid extends JFrame {
                 }
             }
 
+//            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn") {
+//                String direction = "none";
+//                if(currentSelectedY>destRow&&currentSelectedX==destCol){
+//                    direction="north";
+//                }
+//            }
+//            NOTE: DOH KAYATA AT FIRST AKO GI BASE ANG MOVEMENT SA PAWNS SA KING ((except nga pwede siya maka take 2 steps kung iya first move kay going forward and en passant))
         }
-
 
        return false;
 
 
     }
+
+
 
     private void showSelected( int curRow, int curCol){
         squares[curRow][curCol].setBorder(BorderFactory.createLineBorder(Color.RED, 5));

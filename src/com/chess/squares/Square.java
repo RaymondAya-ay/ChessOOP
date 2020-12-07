@@ -7,7 +7,7 @@ public class Square {
 
     private boolean isOccupied;
     private String pieceOccupied = "empty";
-    private String teamOccupied = "empty";
+    private String teamOccupied = "World"; // "World was empty"
     public ImageIcon iconData = null;
     public boolean isSelected = false;
 

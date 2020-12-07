@@ -31,8 +31,9 @@ public class ChessPiece {
         public String iconDestinationWhite = "src/com/chess/images/white_pieces/Queen.png";
         public String chessPieceName = "queen";
     }
-    public class Pawn{
-        public ImageIcon icon = new ImageIcon("src/com/chess/images/black_pieces/Pawn.png");
-        String chessPieceName = "pawn";
+    public static class Pawn{
+        public String iconDestinationBlack = "src/com/chess/images/black_pieces/Pawn.png";
+        public String iconDestinationWhite = "src/com/chess/images/white_pieces/Pawn.png";
+        public String chessPieceName = "Pawn";
     }
 }
