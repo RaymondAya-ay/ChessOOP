@@ -83,7 +83,6 @@ public class ChessboardGrid extends JFrame {
         }
     }
 
-    //
     private void processClick(int destRow, int destCol) {
 
             if(!selected){
@@ -115,6 +114,7 @@ public class ChessboardGrid extends JFrame {
                     squares[currentSelectedY][currentSelectedX].setIcon(null);
 
                     currentTeam = (currentTeam.equals("white"))? "black": "white";
+
                 }
                 squares[currentSelectedY][currentSelectedX].setBorder(null);
                 selected = false;
