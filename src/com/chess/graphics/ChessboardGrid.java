@@ -90,7 +90,7 @@ public class ChessboardGrid extends JFrame {
                 currentSelectedY = destRow;
                 currentSelectedX = destCol;
                 selected = true;
-                System.out.printf("Team: %s ,Piece: %s at y: %d, x: %d is selected\n", boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied(), boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied(), currentSelectedY, currentSelectedX);
+                System.out.printf("Team: %s Piece: %s at y: %d, x: %d is selected\n", boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied(), boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied(), currentSelectedY, currentSelectedX);
             }
             else{
                 if (!isValidMove(destRow, destCol)) {
@@ -432,16 +432,66 @@ public class ChessboardGrid extends JFrame {
                     return true;
                 }
             }
-//            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn") {
-//                String direction = "none";
-//                if(currentSelectedY>destRow&&currentSelectedX==destCol){
-//                    direction="north";
-//                }
-//            }
-//
-//            NOTE: DOH KAYATA AT FIRST AKO GI BASE ANG MOVEMENT SA PAWNS SA KING ((except nga pwede siya maka take 2 steps kung iya first move kay going forward and en passant))
 
+            //White Pawns
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn"&&boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() == "white"){
+                Square p = boardData.boardSquares[destRow][currentSelectedX];
+                if(p.isOccupied() == true && destCol == currentSelectedX && destRow - currentSelectedY == -1){ return false; }
+                int yDistance = Math.abs(destRow - currentSelectedY);
 
+                if(currentSelectedY == 6){ // Current position of the white pawns, 6 meaning the [number of tiles -1] xd
+                    if(yDistance == 2) { // yDistance == 2 enables the pawns to move 2 squares forward from their original position
+                        for (int i = 1; i < 2; i++) {
+                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX];
+                            if (p.isOccupied() == true) {
+                                return false;
+                            }
+                        }
+                        if(destCol == currentSelectedX){
+                            return true;}
+                    }
+                }
+                if(destRow - currentSelectedY == -1 && currentSelectedX == destCol){
+                    return true;
+                }
+                if(destRow - currentSelectedY == -1 && currentSelectedX != destCol) {
+                    Square a = boardData.boardSquares[destRow][destCol];
+                    int xDistance = Math.abs(destCol - currentSelectedX);
+                    if (a.isOccupied() == true && xDistance == 1) {
+                        return true;
+                    }
+                }
+            }
+
+            //Black Pawns
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn" && boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() == "black"){
+                Square p = boardData.boardSquares[destRow][currentSelectedX];
+                if(p.isOccupied() == true && destCol == currentSelectedX && destRow - currentSelectedY == -1){ return false; }
+                int yDistance = Math.abs(destRow - currentSelectedY);
+
+                if(currentSelectedY == 1){
+                    if(yDistance == 2) { // yDistance == 2 enables the pawns to move 2 squares forward from their original position
+                        for (int i = 1; i < 2; i++) {
+                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX];
+                            if (p.isOccupied() == true) {
+                                return false;
+                            }
+                        }
+                        if(destCol == currentSelectedX){
+                            return true;}
+                    }
+                }
+                if(destRow - currentSelectedY == 1 && currentSelectedX == destCol){
+                    return true;
+                }
+                if(destRow - currentSelectedY == 1 && currentSelectedX != destCol) {
+                    Square a = boardData.boardSquares[destRow][destCol];
+                    int xDistance = Math.abs(destCol-currentSelectedX);
+                    if (a.isOccupied() == true &&xDistance==1) {
+                        return true;
+                    }
+                }
+            }
         }
 
        return false;
