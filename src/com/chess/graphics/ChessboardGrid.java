@@ -13,11 +13,15 @@ public class ChessboardGrid extends JFrame {
 
     private JButton[][] squares = new JButton[8][8];
     private Board boardData = new Board();
+
     private int currentSelectedX = -1, currentSelectedY = -1;
 
     boolean selected = false;
     Color black = new Color(102, 51, 0);
     Color white = new Color(255, 204, 153);
+
+    private int bKingY = 0;  private int bKingX = 4;
+    private int wKingY = 7;  private int wKingX = 4;
 
 
     SquareColor currentColor = SquareColor.WHITE;
@@ -91,6 +95,11 @@ public class ChessboardGrid extends JFrame {
                 currentSelectedX = destCol;
                 selected = true;
                 System.out.printf("Team: %s Piece: %s at y: %d, x: %d is selected\n", boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied(), boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied(), currentSelectedY, currentSelectedX);
+                if(currentTeam != boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied()){
+                    selected = false;
+                    squares[currentSelectedY][currentSelectedX].setBorder(null);
+                    System.out.printf("IT IS %s's TURN, NOT YOURS\n", currentTeam);
+                }
             }
             else{
                 if (!isValidMove(destRow, destCol)) {
@@ -115,391 +124,597 @@ public class ChessboardGrid extends JFrame {
 
                     currentTeam = (currentTeam.equals("white"))? "black": "white";
 
-                }
+                    if(currentTeam == "white"){
+                        if(checkIfChecked(wKingY, wKingX)){
+                            System.out.println("WHITE IS CHECKED");
+                        }
+                    }
+                    else{
+                        if(checkIfChecked(bKingY,bKingX)){
+                            System.out.println("BLACK IS CHECKED");
+                        }
+
+                    }
+                } //proceeds with moving the pieces
+
                 squares[currentSelectedY][currentSelectedX].setBorder(null);
                 selected = false;
-            }
 
 
+            } //moves the image icons of the buttons and changes the board data
 
 
 
     }
 
-    private boolean isValidMove(int destRow, int destCol) {
+    private boolean checkIfChecked(int kingPosY, int kingPosX){
 
-        if(currentTeam == boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() && boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() != boardData.boardSquares[destRow][destCol].getTeamOccupied()){
-
-            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "knight") {
-                int rowDelta = Math.abs(destRow - currentSelectedY);
-                int colDelta = Math.abs(destCol - currentSelectedX);
-                if ((rowDelta == 1) && (colDelta == 2)) {
+        for(int kingLeft = kingPosX-1; kingLeft >= 0; kingLeft--){
+            if(boardData.boardSquares[kingPosY][kingLeft].isOccupied()) {
+                if (boardData.boardSquares[kingPosY][kingLeft].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY][kingLeft].getPieceOccupied() == "rook" || boardData.boardSquares[kingPosY][kingLeft].getPieceOccupied() == "queen")) {
                     return true;
                 }
-                if ((rowDelta == 2) && (colDelta == 1)) {
+                else{
+                    break;
+                }
+            }
+        } //checks the left side of the king
+        for(int kingRight = kingPosX+1; kingRight < 8; kingRight++){
+            if(boardData.boardSquares[kingPosY][kingRight].isOccupied()){
+                if(boardData.boardSquares[kingPosY][kingRight].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY][kingRight].getPieceOccupied() == "rook" || boardData.boardSquares[kingPosY][kingRight].getPieceOccupied() == "queen")){
+                    return true;
+                }
+                else{
+                    break;
+                }
+            }
+        } //checks the right side of the king
+        for(int kingUp = kingPosY-1; kingUp >= 0; kingUp--){
+            if(boardData.boardSquares[kingUp][kingPosX].isOccupied()){
+                if(boardData.boardSquares[kingUp][kingPosX].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingUp][kingPosX].getPieceOccupied() == "rook" || boardData.boardSquares[kingUp][kingPosX].getPieceOccupied() == "queen")){
+                    return true;
+                }
+                else{
+                    break;
+                }
+            }
+        } //checks the up side of the king
+        for(int kingDown = kingPosY+1; kingDown < 8; kingDown++){
+            if(boardData.boardSquares[kingDown][kingPosX].isOccupied()){
+                if(boardData.boardSquares[kingDown][kingPosX].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingDown][kingPosX].getPieceOccupied() == "rook" || boardData.boardSquares[kingDown][kingPosX].getPieceOccupied() == "queen")){
+                    return true;
+                }
+                else{
+                    break;
+                }
+            }
+        } //checks the down side of the king
+
+        //this checks for upper left
+        for(int kingDiagonalY = kingPosY - 1, kingDiagonalX = kingPosX - 1; kingDiagonalY >= 0 && kingDiagonalX >= 0; kingDiagonalY--, kingDiagonalX--){
+            if(boardData.boardSquares[kingDiagonalY][kingDiagonalX].isOccupied()){
+                if(boardData.boardSquares[kingDiagonalY][kingDiagonalX].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingDiagonalY][kingDiagonalX].getPieceOccupied() == "bishop" || boardData.boardSquares[kingDiagonalY][kingDiagonalX].getPieceOccupied() == "queen")){
+                    return true;
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        //this checks for lower left
+        for(int kingDiagonalY = kingPosY + 1, kingDiagonalX = kingPosX - 1; kingDiagonalY < 8 && kingDiagonalX >= 0; kingDiagonalY++, kingDiagonalX--){
+            if(boardData.boardSquares[kingDiagonalY][kingDiagonalX].isOccupied()){
+                if(boardData.boardSquares[kingDiagonalY][kingDiagonalX].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingDiagonalY][kingDiagonalX].getPieceOccupied() == "bishop" || boardData.boardSquares[kingDiagonalY][kingDiagonalX].getPieceOccupied() == "queen")){
+                    return true;
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        //this checks for upper right
+        for(int kingDiagonalY = kingPosY - 1, kingDiagonalX = kingPosX + 1; kingDiagonalY >= 0 && kingDiagonalX < 8; kingDiagonalY--, kingDiagonalX++){
+            if(boardData.boardSquares[kingDiagonalY][kingDiagonalX].isOccupied()){
+                if(boardData.boardSquares[kingDiagonalY][kingDiagonalX].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingDiagonalY][kingDiagonalX].getPieceOccupied() == "bishop" || boardData.boardSquares[kingDiagonalY][kingDiagonalX].getPieceOccupied() == "queen")){
+                    return true;
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        //this checks for lower right
+        for(int kingDiagonalY = kingPosY + 1, kingDiagonalX = kingPosX + 1; kingDiagonalY < 8  && kingDiagonalX < 8; kingDiagonalY++, kingDiagonalX++){
+            if(boardData.boardSquares[kingDiagonalY][kingDiagonalX].isOccupied()){
+                if(boardData.boardSquares[kingDiagonalY][kingDiagonalX].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingDiagonalY][kingDiagonalX].getPieceOccupied() == "bishop" || boardData.boardSquares[kingDiagonalY][kingDiagonalX].getPieceOccupied() == "queen")){
+                    return true;
+                }
+                else{
+                    break;
+                }
+            }
+        }
+
+        //checks if there are knights
+        if(kingPosY-2 >= 0 && kingPosX-1 >= 0){
+            if(boardData.boardSquares[kingPosY-2][kingPosX-1].isOccupied()){
+                if(boardData.boardSquares[kingPosY-2][kingPosX-1].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY-2][kingPosX-1].getPieceOccupied() == "knight")){
                     return true;
                 }
             }
-            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "rook"){
-               String direction="none";
-                if(currentSelectedY<destRow&&currentSelectedX==destCol){
-                    direction="south";
-                }
-                if(currentSelectedY>destRow&&currentSelectedX==destCol){
-                    direction="north";
-                }
-                if(currentSelectedX<destCol&&currentSelectedY==destRow){
-                    direction="east";
-                }
-                if(currentSelectedX>destCol&&currentSelectedY==destRow){
-                    direction="west";
-                }
-                if(direction=="south") {
-                    int spacesToMove = Math.abs(destRow - currentSelectedY);
-                    Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY + i][currentSelectedX];
-                        if(p.isOccupied()==true){
-                            return false;
-                        }
-
-                    }
-
-                    return true;
-                }
-                if(direction=="north") {
-                    int spacesToMove = Math.abs(destRow - currentSelectedY);
-                    Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY - i][currentSelectedX];
-                        if(p.isOccupied()==true){
-                            return false;
-                        }
-
-                    }
-
-                    return true;
-                }
-                if(direction=="east") {
-                    int spacesToMove = Math.abs(destCol - currentSelectedX);
-                    Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY][currentSelectedX+i];
-                        if(p.isOccupied()==true){
-                            return false;
-                        }
-
-                    }
-
-                    return true;
-                }
-                if(direction=="west") {
-                    int spacesToMove = Math.abs(destCol - currentSelectedX);
-                    Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY][currentSelectedX-i];
-                        if(p.isOccupied()==true){
-                            return false;
-                        }
-
-                    }
-
-                    return true;
-                }
-
-            }
-            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "bishop"){
-                int XspacesToMove = Math.abs(destCol - currentSelectedX);
-                int YspacesToMove = Math.abs(destRow - currentSelectedY);
-                if(XspacesToMove==YspacesToMove) {
-                    String direction = "none";
-                    if (currentSelectedY < destRow && currentSelectedX < destCol) {
-                        direction = "southeast";
-                    }
-                    if (currentSelectedY < destRow && currentSelectedX > destCol) {
-                        direction = "southwest";
-                    }
-                    if (currentSelectedY > destRow && currentSelectedX > destCol) {
-                        direction = "northwest";
-                    }
-                    if (currentSelectedY > destRow && currentSelectedX < destCol) {
-                        direction = "northeast";
-                    }
-                    if (direction == "southeast") {
-                        int spacesToMove = Math.abs(destCol - currentSelectedX);
-                        Square p = new Square();
-                        for (int i = 1; i < XspacesToMove; i++) {
-                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX + i];
-                            if (p.isOccupied() == true) {
-                                return false;
-                            }
-
-                        }
-
-                        return true;
-                    }
-                    if (direction == "southwest") {
-
-                        Square p = new Square();
-                        for (int i = 1; i < XspacesToMove; i++) {
-                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX - i];
-                            if (p.isOccupied() == true) {
-                                return false;
-                            }
-
-                        }
-
-                        return true;
-                    }
-                    if (direction == "northwest") {
-
-                        Square p = new Square();
-                        for (int i = 1; i < XspacesToMove; i++) {
-                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX - i];
-                            if (p.isOccupied() == true) {
-                                return false;
-                            }
-
-                        }
-
-                        return true;
-                    }
-                    if (direction == "northeast") {
-
-                        Square p = new Square();
-
-                        for (int i = 1; i < XspacesToMove; i++) {
-                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX + i];
-                            if (p.isOccupied() == true) {
-                                return false;
-                            }
-
-                        }
-
-                        return true;
-
-                    }
-                }
-
-            }
-            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "queen"){
-                String direction="none";
-                if(currentSelectedY<destRow&&currentSelectedX<destCol){
-                    direction="southeast";
-                }
-                if(currentSelectedY<destRow&&currentSelectedX>destCol){
-                    direction="southwest";
-                }
-                if(currentSelectedY>destRow&&currentSelectedX>destCol){
-                    direction="northwest";
-                }
-                if(currentSelectedY>destRow&&currentSelectedX<destCol){
-                    direction="northeast";
-                } if(currentSelectedY<destRow&&currentSelectedX==destCol){
-                    direction="south";
-                }
-                if(currentSelectedY>destRow&&currentSelectedX==destCol){
-                    direction="north";
-                }
-                if(currentSelectedX<destCol&&currentSelectedY==destRow){
-                    direction="east";
-                }
-                if(currentSelectedX>destCol&&currentSelectedY==destRow){
-                    direction="west";
-                }
-                if(direction=="south") {
-                    int spacesToMove = Math.abs(destRow - currentSelectedY);
-                    Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY + i][currentSelectedX];
-                        if(p.isOccupied()==true){
-                            return false;
-                        }
-
-                    }
-
-                    return true;
-                }
-                if(direction=="north") {
-                    int spacesToMove = Math.abs(destRow - currentSelectedY);
-                    Square p;
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY - i][currentSelectedX];
-                        if(p.isOccupied()==true){
-                            return false;
-                        }
-
-                    }
-
-                    return true;
-                }
-                if(direction=="east") {
-                    int spacesToMove = Math.abs(destCol - currentSelectedX);
-                    Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY][currentSelectedX+i];
-                        if(p.isOccupied()==true){
-                            return false;
-                        }
-
-                    }
-
-                    return true;
-                }
-                if(direction=="west") {
-                    int spacesToMove = Math.abs(destCol - currentSelectedX);
-                    Square p = new Square();
-                    for (int i = 1; i < spacesToMove; i++) {
-                        p = boardData.boardSquares[currentSelectedY][currentSelectedX-i];
-                        if(p.isOccupied()==true){
-                            return false;
-                        }
-
-                    }
-
-                    return true;
-                }
-                if(direction=="southeast") {
-                    int XspacesToMove = Math.abs(destCol - currentSelectedX);
-                    int YspacesToMove = Math.abs(destRow - currentSelectedY);
-                    Square p = new Square();
-                    if(XspacesToMove==YspacesToMove) {
-                        for (int i = 1; i < XspacesToMove; i++) {
-                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX + i];
-                            if (p.isOccupied() == true) {
-                                return false;
-                            }
-
-                        }
-
-                        return true;
-                    }
-                }
-                if(direction=="southwest") {
-                    int XspacesToMove = Math.abs(destCol - currentSelectedX);
-                    int YspacesToMove = Math.abs(destRow - currentSelectedY);
-                    Square p = new Square();
-                    if(XspacesToMove==YspacesToMove) {
-                        for (int i = 1; i < XspacesToMove; i++) {
-                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX - i];
-                            if (p.isOccupied() == true) {
-                                return false;
-                            }
-
-                        }
-
-                        return true;
-                    }
-                }
-                if(direction=="northwest") {
-                    int XspacesToMove = Math.abs(destCol - currentSelectedX);
-                    int YspacesToMove = Math.abs(destRow - currentSelectedY);
-                    Square p = new Square();
-                    if(XspacesToMove==YspacesToMove) {
-                        for (int i = 1; i < XspacesToMove; i++) {
-                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX - i];
-                            if (p.isOccupied() == true) {
-                                return false;
-                            }
-
-                        }
-
-                        return true;
-                    }
-                }
-                if(direction=="northeast") {
-                    int XspacesToMove = Math.abs(destCol - currentSelectedX);
-                    int YspacesToMove = Math.abs(destRow - currentSelectedY);
-                    Square p = new Square();
-                    if(XspacesToMove==YspacesToMove) {
-                        for (int i = 1; i < XspacesToMove; i++) {
-                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX + i];
-                            if (p.isOccupied() == true) {
-                                return false;
-                            }
-
-                        }
-
-                        return true;
-                    }
-                }
-
-            }
-            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "king") {
-                int xDistance = Math.abs(destCol - currentSelectedX);
-                int yDistance = Math.abs(destRow - currentSelectedY);
-                if(xDistance<=1&&yDistance<=1){
+        }
+        if(kingPosY-2 >= 0 && kingPosX+1 < 8){
+            if(boardData.boardSquares[kingPosY-2][kingPosX+1].isOccupied()){
+                if(boardData.boardSquares[kingPosY-2][kingPosX+1].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY-2][kingPosX+1].getPieceOccupied() == "knight")){
                     return true;
                 }
             }
-
-            //White Pawns
-            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn"&&boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() == "white"){
-                Square p = boardData.boardSquares[destRow][currentSelectedX];
-                if(p.isOccupied() == true && destCol == currentSelectedX && destRow - currentSelectedY == -1){ return false; }
-                int yDistance = Math.abs(destRow - currentSelectedY);
-
-                if(currentSelectedY == 6){ // Current position of the white pawns, 6 meaning the [number of tiles -1] xd
-                    if(yDistance == 2) { // yDistance == 2 enables the pawns to move 2 squares forward from their original position
-                        for (int i = 1; i < 2; i++) {
-                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX];
-                            if (p.isOccupied() == true) {
-                                return false;
-                            }
-                        }
-                        if(destCol == currentSelectedX){
-                            return true;}
-                    }
-                }
-                if(destRow - currentSelectedY == -1 && currentSelectedX == destCol){
+        }
+        if(kingPosY-1 >= 0 && kingPosX-2 < 0){
+            if(boardData.boardSquares[kingPosY-1][kingPosX-2].isOccupied()){
+                if(boardData.boardSquares[kingPosY-1][kingPosX-2].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY-1][kingPosX-2].getPieceOccupied() == "knight")){
                     return true;
                 }
-                if(destRow - currentSelectedY == -1 && currentSelectedX != destCol) {
-                    Square a = boardData.boardSquares[destRow][destCol];
-                    int xDistance = Math.abs(destCol - currentSelectedX);
-                    if (a.isOccupied() == true && xDistance == 1) {
+            }
+        }
+        if(kingPosY-1 >= 0 && kingPosX+2 > 8){
+            if(boardData.boardSquares[kingPosY-1][kingPosX+2].isOccupied()){
+                if(boardData.boardSquares[kingPosY-1][kingPosX+2].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY-1][kingPosX+2].getPieceOccupied() == "knight")){
+                    return true;
+                }
+            }
+        }
+        if(kingPosY+1 < 8 && kingPosX-2 >= 0){
+            if(boardData.boardSquares[kingPosY+1][kingPosX-2].isOccupied()){
+                if(boardData.boardSquares[kingPosY+1][kingPosX-2].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY+1][kingPosX-2].getPieceOccupied() == "knight")){
+                    return true;
+                }
+            }
+        }
+        if(kingPosY+1 < 8 && kingPosX+2 < 8){
+            if(boardData.boardSquares[kingPosY+1][kingPosX+2].isOccupied()){
+                if(boardData.boardSquares[kingPosY+1][kingPosX+2].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY+1][kingPosX+2].getPieceOccupied() == "knight")){
+                    return true;
+                }
+            }
+        }
+        if(kingPosY+2 < 8 && kingPosX-1 >= 0){
+            if(boardData.boardSquares[kingPosY+2][kingPosX-1].isOccupied()){
+                if(boardData.boardSquares[kingPosY+2][kingPosX-1].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY+2][kingPosX-1].getPieceOccupied() == "knight")){
+                    return true;
+                }
+            }
+        }
+        if(kingPosY+2 < 8 && kingPosX+1 >= 0){
+            if(boardData.boardSquares[kingPosY+2][kingPosX+1].isOccupied()){
+                if(boardData.boardSquares[kingPosY+2][kingPosX+1].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY+2][kingPosX+1].getPieceOccupied() == "knight")){
+                    return true;
+                }
+            }
+        }
+
+        //checks if there are pawns
+        if(currentTeam == "white"){
+            if(kingPosY+1 < 8 && kingPosX+1 < 8){
+                if(boardData.boardSquares[kingPosY+1][kingPosX+1].isOccupied()){
+                    if(boardData.boardSquares[kingPosY+1][kingPosX+1].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY+1][kingPosX+1].getPieceOccupied() == "pawn")){
                         return true;
                     }
                 }
             }
-
-            //Black Pawns
-            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn" && boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() == "black"){
-                Square p = boardData.boardSquares[destRow][currentSelectedX];
-                if(p.isOccupied() == true && destCol == currentSelectedX && destRow - currentSelectedY == -1){ return false; }
-                int yDistance = Math.abs(destRow - currentSelectedY);
-
-                if(currentSelectedY == 1){
-                    if(yDistance == 2) { // yDistance == 2 enables the pawns to move 2 squares forward from their original position
-                        for (int i = 1; i < 2; i++) {
-                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX];
-                            if (p.isOccupied() == true) {
-                                return false;
-                            }
-                        }
-                        if(destCol == currentSelectedX){
-                            return true;}
+            if(kingPosY+1 < 8 && kingPosX-1 >= 0){
+                if(boardData.boardSquares[kingPosY+1][kingPosX-1].isOccupied()){
+                    if(boardData.boardSquares[kingPosY+1][kingPosX-1].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY+1][kingPosX-1].getPieceOccupied() == "pawn")){
+                        return true;
                     }
                 }
-                if(destRow - currentSelectedY == 1 && currentSelectedX == destCol){
-                    return true;
+            }
+        }
+        else{
+            if(kingPosY-1 >= 0 && kingPosX+1 < 8){
+                if(boardData.boardSquares[kingPosY-1][kingPosX+1].isOccupied()){
+                    if(boardData.boardSquares[kingPosY-1][kingPosX+1].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY-1][kingPosX+1].getPieceOccupied() == "pawn")){
+                        return true;
+                    }
                 }
-                if(destRow - currentSelectedY == 1 && currentSelectedX != destCol) {
-                    Square a = boardData.boardSquares[destRow][destCol];
-                    int xDistance = Math.abs(destCol-currentSelectedX);
-                    if (a.isOccupied() == true &&xDistance==1) {
+            }
+            if(kingPosY-1 >= 0 && kingPosX-1 >= 0){
+                if(boardData.boardSquares[kingPosY-1][kingPosX-1].isOccupied()){
+                    if(boardData.boardSquares[kingPosY-1][kingPosX-1].getTeamOccupied() != currentTeam && (boardData.boardSquares[kingPosY-1][kingPosX-1].getPieceOccupied() == "pawn")){
                         return true;
                     }
                 }
             }
         }
 
+        return false;
+
+    }
+
+    private boolean isValidMove(int destRow, int destCol) {
+
+        //this checks the dest.square if the occupant is from the same team
+        if(boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() != boardData.boardSquares[destRow][destCol].getTeamOccupied()){
+
+            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "knight") {
+                    int rowDelta = Math.abs(destRow - currentSelectedY);
+                    int colDelta = Math.abs(destCol - currentSelectedX);
+                    if ((rowDelta == 1) && (colDelta == 2)) {
+                        return true;
+                    }
+                    if ((rowDelta == 2) && (colDelta == 1)) {
+                        return true;
+                    }
+                }
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "rook"){
+                    String direction="none";
+                    if(currentSelectedY<destRow&&currentSelectedX==destCol){
+                        direction="south";
+                    }
+                    if(currentSelectedY>destRow&&currentSelectedX==destCol){
+                        direction="north";
+                    }
+                    if(currentSelectedX<destCol&&currentSelectedY==destRow){
+                        direction="east";
+                    }
+                    if(currentSelectedX>destCol&&currentSelectedY==destRow){
+                        direction="west";
+                    }
+                    if(direction=="south") {
+                        int spacesToMove = Math.abs(destRow - currentSelectedY);
+                        Square p = new Square();
+                        for (int i = 1; i < spacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX];
+                            if(p.isOccupied()==true){
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+                    }
+                    if(direction=="north") {
+                        int spacesToMove = Math.abs(destRow - currentSelectedY);
+                        Square p = new Square();
+                        for (int i = 1; i < spacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX];
+                            if(p.isOccupied()==true){
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+                    }
+                    if(direction=="east") {
+                        int spacesToMove = Math.abs(destCol - currentSelectedX);
+                        Square p = new Square();
+                        for (int i = 1; i < spacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY][currentSelectedX+i];
+                            if(p.isOccupied()==true){
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+                    }
+                    if(direction=="west") {
+                        int spacesToMove = Math.abs(destCol - currentSelectedX);
+                        Square p = new Square();
+                        for (int i = 1; i < spacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY][currentSelectedX-i];
+                            if(p.isOccupied()==true){
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+                    }
+
+                }
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "bishop"){
+                    int XspacesToMove = Math.abs(destCol - currentSelectedX);
+                    int YspacesToMove = Math.abs(destRow - currentSelectedY);
+                    if(XspacesToMove==YspacesToMove) {
+                        String direction = "none";
+                        if (currentSelectedY < destRow && currentSelectedX < destCol) {
+                            direction = "southeast";
+                        }
+                        if (currentSelectedY < destRow && currentSelectedX > destCol) {
+                            direction = "southwest";
+                        }
+                        if (currentSelectedY > destRow && currentSelectedX > destCol) {
+                            direction = "northwest";
+                        }
+                        if (currentSelectedY > destRow && currentSelectedX < destCol) {
+                            direction = "northeast";
+                        }
+                        if (direction == "southeast") {
+                            int spacesToMove = Math.abs(destCol - currentSelectedX);
+                            Square p = new Square();
+                            for (int i = 1; i < XspacesToMove; i++) {
+                                p = boardData.boardSquares[currentSelectedY + i][currentSelectedX + i];
+                                if (p.isOccupied() == true) {
+                                    return false;
+                                }
+
+                            }
+
+                            return true;
+                        }
+                        if (direction == "southwest") {
+
+                            Square p = new Square();
+                            for (int i = 1; i < XspacesToMove; i++) {
+                                p = boardData.boardSquares[currentSelectedY + i][currentSelectedX - i];
+                                if (p.isOccupied() == true) {
+                                    return false;
+                                }
+
+                            }
+
+                            return true;
+                        }
+                        if (direction == "northwest") {
+
+                            Square p = new Square();
+                            for (int i = 1; i < XspacesToMove; i++) {
+                                p = boardData.boardSquares[currentSelectedY - i][currentSelectedX - i];
+                                if (p.isOccupied() == true) {
+                                    return false;
+                                }
+
+                            }
+
+                            return true;
+                        }
+                        if (direction == "northeast") {
+
+                            Square p = new Square();
+
+                            for (int i = 1; i < XspacesToMove; i++) {
+                                p = boardData.boardSquares[currentSelectedY - i][currentSelectedX + i];
+                                if (p.isOccupied() == true) {
+                                    return false;
+                                }
+
+                            }
+
+                            return true;
+
+                        }
+                    }
+
+                }
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "queen"){
+                    String direction="none";
+                    if(currentSelectedY<destRow&&currentSelectedX<destCol){
+                        direction="southeast";
+                    }
+                    if(currentSelectedY<destRow&&currentSelectedX>destCol){
+                        direction="southwest";
+                    }
+                    if(currentSelectedY>destRow&&currentSelectedX>destCol){
+                        direction="northwest";
+                    }
+                    if(currentSelectedY>destRow&&currentSelectedX<destCol){
+                        direction="northeast";
+                    } if(currentSelectedY<destRow&&currentSelectedX==destCol){
+                        direction="south";
+                    }
+                    if(currentSelectedY>destRow&&currentSelectedX==destCol){
+                        direction="north";
+                    }
+                    if(currentSelectedX<destCol&&currentSelectedY==destRow){
+                        direction="east";
+                    }
+                    if(currentSelectedX>destCol&&currentSelectedY==destRow){
+                        direction="west";
+                    }
+                    if(direction=="south") {
+                        int spacesToMove = Math.abs(destRow - currentSelectedY);
+                        Square p = new Square();
+                        for (int i = 1; i < spacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY + i][currentSelectedX];
+                            if(p.isOccupied()==true){
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+                    }
+                    if(direction=="north") {
+                        int spacesToMove = Math.abs(destRow - currentSelectedY);
+                        Square p;
+                        for (int i = 1; i < spacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY - i][currentSelectedX];
+                            if(p.isOccupied()==true){
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+                    }
+                    if(direction=="east") {
+                        int spacesToMove = Math.abs(destCol - currentSelectedX);
+                        Square p = new Square();
+                        for (int i = 1; i < spacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY][currentSelectedX+i];
+                            if(p.isOccupied()==true){
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+                    }
+                    if(direction=="west") {
+                        int spacesToMove = Math.abs(destCol - currentSelectedX);
+                        Square p = new Square();
+                        for (int i = 1; i < spacesToMove; i++) {
+                            p = boardData.boardSquares[currentSelectedY][currentSelectedX-i];
+                            if(p.isOccupied()==true){
+                                return false;
+                            }
+
+                        }
+
+                        return true;
+                    }
+                    if(direction=="southeast") {
+                        int XspacesToMove = Math.abs(destCol - currentSelectedX);
+                        int YspacesToMove = Math.abs(destRow - currentSelectedY);
+                        Square p = new Square();
+                        if(XspacesToMove==YspacesToMove) {
+                            for (int i = 1; i < XspacesToMove; i++) {
+                                p = boardData.boardSquares[currentSelectedY + i][currentSelectedX + i];
+                                if (p.isOccupied() == true) {
+                                    return false;
+                                }
+
+                            }
+
+                            return true;
+                        }
+                    }
+                    if(direction=="southwest") {
+                        int XspacesToMove = Math.abs(destCol - currentSelectedX);
+                        int YspacesToMove = Math.abs(destRow - currentSelectedY);
+                        Square p = new Square();
+                        if(XspacesToMove==YspacesToMove) {
+                            for (int i = 1; i < XspacesToMove; i++) {
+                                p = boardData.boardSquares[currentSelectedY + i][currentSelectedX - i];
+                                if (p.isOccupied() == true) {
+                                    return false;
+                                }
+
+                            }
+
+                            return true;
+                        }
+                    }
+                    if(direction=="northwest") {
+                        int XspacesToMove = Math.abs(destCol - currentSelectedX);
+                        int YspacesToMove = Math.abs(destRow - currentSelectedY);
+                        Square p = new Square();
+                        if(XspacesToMove==YspacesToMove) {
+                            for (int i = 1; i < XspacesToMove; i++) {
+                                p = boardData.boardSquares[currentSelectedY - i][currentSelectedX - i];
+                                if (p.isOccupied() == true) {
+                                    return false;
+                                }
+
+                            }
+
+                            return true;
+                        }
+                    }
+                    if(direction=="northeast") {
+                        int XspacesToMove = Math.abs(destCol - currentSelectedX);
+                        int YspacesToMove = Math.abs(destRow - currentSelectedY);
+                        Square p = new Square();
+                        if(XspacesToMove==YspacesToMove) {
+                            for (int i = 1; i < XspacesToMove; i++) {
+                                p = boardData.boardSquares[currentSelectedY - i][currentSelectedX + i];
+                                if (p.isOccupied() == true) {
+                                    return false;
+                                }
+
+                            }
+
+                            return true;
+                        }
+                    }
+
+                }
+            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "king") {
+                    int xDistance = Math.abs(destCol - currentSelectedX);
+                    int yDistance = Math.abs(destRow - currentSelectedY);
+                    if(xDistance<=1&&yDistance<=1){
+                        if(currentTeam == "white"){
+                            wKingY = destRow;
+                            wKingX = destCol;
+                        }
+                        else{
+                            bKingY = destRow;
+                            bKingX = destCol;
+                        }
+                        return true;
+                    }
+                }
+
+                //White Pawns
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn"&&boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() == "white"){
+                    Square p = boardData.boardSquares[destRow][currentSelectedX];
+                    if(p.isOccupied() == true && destCol == currentSelectedX && destRow - currentSelectedY == -1){ return false; }
+                    int yDistance = Math.abs(destRow - currentSelectedY);
+
+                    if(currentSelectedY == 6){ // Current position of the white pawns, 6 meaning the [number of tiles -1] xd
+                        if(yDistance == 2) { // yDistance == 2 enables the pawns to move 2 squares forward from their original position
+                            for (int i = 1; i < 2; i++) {
+                                p = boardData.boardSquares[currentSelectedY - i][currentSelectedX];
+                                if (p.isOccupied() == true) {
+                                    return false;
+                                }
+                            }
+                            if(destCol == currentSelectedX){
+                                return true;}
+                        }
+                    }
+                    if(destRow - currentSelectedY == -1 && currentSelectedX == destCol){
+                        return true;
+                    }
+                    if(destRow - currentSelectedY == -1 && currentSelectedX != destCol) {
+                        Square a = boardData.boardSquares[destRow][destCol];
+                        int xDistance = Math.abs(destCol - currentSelectedX);
+                        if (a.isOccupied() == true && xDistance == 1) {
+                            return true;
+                        }
+                    }
+                }
+
+                //Black Pawns
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn" && boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() == "black"){
+                    Square p = boardData.boardSquares[destRow][currentSelectedX];
+                    if(p.isOccupied() == true && destCol == currentSelectedX && destRow - currentSelectedY == -1){ return false; }
+                    int yDistance = Math.abs(destRow - currentSelectedY);
+
+                    if(currentSelectedY == 1){
+                        if(yDistance == 2) { // yDistance == 2 enables the pawns to move 2 squares forward from their original position
+                            for (int i = 1; i < 2; i++) {
+                                p = boardData.boardSquares[currentSelectedY + i][currentSelectedX];
+                                if (p.isOccupied() == true) {
+                                    return false;
+                                }
+                            }
+                            if(destCol == currentSelectedX){
+                                return true;}
+                        }
+                    }
+                    if(destRow - currentSelectedY == 1 && currentSelectedX == destCol){
+                        return true;
+                    }
+                    if(destRow - currentSelectedY == 1 && currentSelectedX != destCol) {
+                        Square a = boardData.boardSquares[destRow][destCol];
+                        int xDistance = Math.abs(destCol-currentSelectedX);
+                        if (a.isOccupied() == true &&xDistance==1) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+
+
+
        return false;
 
 
     }
-
-
 
     private void showSelected( int curRow, int curCol){
         squares[curRow][curCol].setBorder(BorderFactory.createLineBorder(Color.RED, 5));
