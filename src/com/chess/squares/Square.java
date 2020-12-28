@@ -5,9 +5,9 @@ import javax.swing.*;
 
 public class Square {
 
-    private boolean isOccupied;
+    private boolean isOccupied = false;
     private String pieceOccupied = "empty";
-    private String teamOccupied = "World"; // "World was empty"
+    private String teamOccupied = "empty"; // "World was empty (i changed it to empty instead of world")
     public ImageIcon iconData = null;
     public boolean isSelected = false;
 

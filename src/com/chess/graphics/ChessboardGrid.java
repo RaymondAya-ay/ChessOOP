@@ -13,6 +13,7 @@ public class ChessboardGrid extends JFrame {
 
     private JButton[][] squares = new JButton[8][8];
     private Board boardData = new Board();
+    private Board tempBoard = new Board();
 
     private int currentSelectedX = -1, currentSelectedY = -1;
 
@@ -88,6 +89,7 @@ public class ChessboardGrid extends JFrame {
     }
 
     private void processClick(int destRow, int destCol) {
+            copyData();
 
             if(!selected){
                 showSelected(destRow,destCol);
@@ -111,30 +113,61 @@ public class ChessboardGrid extends JFrame {
                     boardData.boardSquares[currentSelectedY][currentSelectedX].setOccupied(false);
 
                     boardData.boardSquares[destRow][destCol].setTeamOccupied(boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied());
-                    boardData.boardSquares[currentSelectedY][currentSelectedX].setTeamOccupied("Empty");
+                    boardData.boardSquares[currentSelectedY][currentSelectedX].setTeamOccupied("empty");
 
                     boardData.boardSquares[destRow][destCol].setIconData(boardData.boardSquares[currentSelectedY][currentSelectedX].getIconData());
                     boardData.boardSquares[destRow][destCol].setPieceOccupied(boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied());
                     boardData.boardSquares[currentSelectedY][currentSelectedX].setIconData(null);
-                    boardData.boardSquares[currentSelectedY][currentSelectedX].setPieceOccupied("Empty");
+                    boardData.boardSquares[currentSelectedY][currentSelectedX].setPieceOccupied("empty");
 
                     squares[destRow][destCol].setIcon(squares[currentSelectedY][currentSelectedX].getIcon());
                     boardData.boardSquares[currentSelectedY][currentSelectedX].setIconData(null);
                     squares[currentSelectedY][currentSelectedX].setIcon(null);
 
+                    if(checkIfChecked()){
+                        revertToPrevious();
+                        currentTeam = (currentTeam.equals("white"))? "black": "white";
+                        squares[currentSelectedY][currentSelectedX].setIcon(squares[destRow][destCol].getIcon());
+                        squares[destRow][destCol].setIcon(null);
+                        JFrame notification = new JFrame();
+                        JPanel panel = new JPanel();
+                        JLabel label = new JLabel();
+                        label.setText("YOU CANT PLACE YOURSELF IN A CHECK");
+                        panel.add(label);
+                        notification.add(panel);
+
+                        notification.setVisible(true);
+                        notification.setSize(450,100);
+                        notification.setLocationRelativeTo(null);
+                        notification.setResizable(false);
+                    }
                     currentTeam = (currentTeam.equals("white"))? "black": "white";
 
-                    if(currentTeam == "white"){
-                        if(checkIfChecked(wKingY, wKingX)){
-                            System.out.println("WHITE IS CHECKED");
-                        }
-                    }
-                    else{
-                        if(checkIfChecked(bKingY,bKingX)){
-                            System.out.println("BLACK IS CHECKED");
-                        }
+                    if(checkIfChecked()){
+                        System.out.println("CHECK");
+                        if(isCheckmate()){
+                            JFrame endScreen = new JFrame();
 
+                            endScreen.setSize(450, 100);
+                            endScreen.setResizable(false);
+                            endScreen.setVisible(true);
+                            endScreen.setLocationRelativeTo(null);
+                            endScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+                            JPanel panel = new JPanel();
+                            JLabel winnerText = new JLabel();
+                            if(currentTeam == "black"){
+                                winnerText.setText("CHECKMATE, WHITE WINS!!!");
+                            }
+                           else{
+                                winnerText.setText("CHECKMATE, BLACK WINS!!!");
+                            }
+
+                            panel.add(winnerText);
+                            endScreen.add(panel);
+                        }
                     }
+
                 } //proceeds with moving the pieces
 
                 squares[currentSelectedY][currentSelectedX].setBorder(null);
@@ -147,7 +180,9 @@ public class ChessboardGrid extends JFrame {
 
     }
 
-    private boolean checkIfChecked(int kingPosY, int kingPosX){
+    private boolean checkIfChecked(){
+        int kingPosY = (currentTeam == "white")? wKingY: bKingY;
+        int kingPosX = (currentTeam == "white")? wKingX: bKingX;
 
         for(int kingLeft = kingPosX-1; kingLeft >= 0; kingLeft--){
             if(boardData.boardSquares[kingPosY][kingLeft].isOccupied()) {
@@ -197,6 +232,7 @@ public class ChessboardGrid extends JFrame {
                     return true;
                 }
                 else{
+
                     break;
                 }
             }
@@ -208,6 +244,7 @@ public class ChessboardGrid extends JFrame {
                     return true;
                 }
                 else{
+
                     break;
                 }
             }
@@ -331,12 +368,1133 @@ public class ChessboardGrid extends JFrame {
 
     }
 
+    private void copyData(){
+        for(int y = 0; y < 8; y++){
+            for(int x = 0; x < 8; x++){
+                tempBoard.boardSquares[y][x].setPieceOccupied(boardData.boardSquares[y][x].getPieceOccupied());
+                tempBoard.boardSquares[y][x].setIconData(boardData.boardSquares[y][x].getIconData());
+                tempBoard.boardSquares[y][x].setOccupied(boardData.boardSquares[y][x].isOccupied());
+                tempBoard.boardSquares[y][x].setTeamOccupied(boardData.boardSquares[y][x].getTeamOccupied());
+            }
+        }
+    }
+
+    private void revertToPrevious(){
+        for(int y = 0; y < 8; y++){
+            for(int x = 0; x < 8; x++){
+                boardData.boardSquares[y][x].setPieceOccupied(tempBoard.boardSquares[y][x].getPieceOccupied());
+                boardData.boardSquares[y][x].setIconData(tempBoard.boardSquares[y][x].getIconData());
+                boardData.boardSquares[y][x].setOccupied(tempBoard.boardSquares[y][x].isOccupied());
+                boardData.boardSquares[y][x].setTeamOccupied(tempBoard.boardSquares[y][x].getTeamOccupied());
+            }
+        }
+    }
+    private boolean isCheckmate(){
+        copyData();
+        for(int y = 0; y < 8; y++){
+            for(int x = 0; x < 8; x++){
+                if(boardData.boardSquares[y][x].getTeamOccupied() == currentTeam){
+                    if(boardData.boardSquares[y][x].getPieceOccupied() == "rook"){
+                        for(int left = x - 1; left >= 0 && boardData.boardSquares[y][left].getTeamOccupied() != currentTeam; left--){
+                            if(boardData.boardSquares[y][left].isOccupied() && boardData.boardSquares[y][left].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y][left].setOccupied(true);
+                                boardData.boardSquares[y][left].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y][left].setPieceOccupied("rook");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y,left);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y][left].setOccupied(true);
+                            boardData.boardSquares[y][left].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y][left].setPieceOccupied("rook");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y,left);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int right = x + 1; right < 8 && boardData.boardSquares[y][right].getTeamOccupied() != currentTeam;right++){
+                            if(boardData.boardSquares[y][right].isOccupied() && boardData.boardSquares[y][right].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y][right].setOccupied(true);
+                                boardData.boardSquares[y][right].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y][right].setPieceOccupied("rook");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y,right);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y][right].setOccupied(true);
+                            boardData.boardSquares[y][right].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y][right].setPieceOccupied("rook");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y,right);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int up = y - 1; up >= 0 && boardData.boardSquares[up][x].getTeamOccupied() != currentTeam; up--){
+                            if(boardData.boardSquares[y][x].isOccupied() && boardData.boardSquares[y][x].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[up][x].setOccupied(true);
+                                boardData.boardSquares[up][x].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[up][x].setPieceOccupied("rook");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,y);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[up][x].setOccupied(true);
+                            boardData.boardSquares[up][x].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[up][x].setPieceOccupied("rook");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,x);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int down = y + 1; down < 8 && boardData.boardSquares[down][x].getTeamOccupied() != currentTeam; down++){
+                            if(boardData.boardSquares[down][x].isOccupied() && boardData.boardSquares[y][x].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[down][x].setOccupied(true);
+                                boardData.boardSquares[down][x].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[down][x].setPieceOccupied("rook");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,x);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[down][x].setOccupied(true);
+                            boardData.boardSquares[down][x].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[down][x].setPieceOccupied("rook");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,x);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                    }
+                    if(boardData.boardSquares[y][x].getPieceOccupied() == "bishop"){
+                        for(int left = x - 1, up = y - 1; left >= 0 && up >= 0 && boardData.boardSquares[y][left].getTeamOccupied() != currentTeam; left--, up--){
+                            if(boardData.boardSquares[up][left].isOccupied() && boardData.boardSquares[up][left].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[up][left].setOccupied(true);
+                                boardData.boardSquares[up][left].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[up][left].setPieceOccupied("bishop");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,left);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[up][left].setOccupied(true);
+                            boardData.boardSquares[up][left].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[up][left].setPieceOccupied("bishop");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,left);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int right = x + 1, up = y - 1; right < 8 && up >= 0 && boardData.boardSquares[y][right].getTeamOccupied() != currentTeam;right++, up--){
+                            if(boardData.boardSquares[y][right].isOccupied() && boardData.boardSquares[y][right].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[up][right].setOccupied(true);
+                                boardData.boardSquares[up][right].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[up][right].setPieceOccupied("bishop");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,right);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y][right].setOccupied(true);
+                            boardData.boardSquares[y][right].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y][right].setPieceOccupied("bishop");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,right);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int down = y + 1, left = x - 1; down < 8 && left >= 0 && boardData.boardSquares[down][left].getTeamOccupied() != currentTeam; down++, left--){
+                            if(boardData.boardSquares[y][x].isOccupied() && boardData.boardSquares[y][x].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[down][left].setOccupied(true);
+                                boardData.boardSquares[down][left].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[down][left].setPieceOccupied("bishop");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,left);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[down][left].setOccupied(true);
+                            boardData.boardSquares[down][left].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[down][left].setPieceOccupied("bishop");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,left);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int down = y + 1, right = x + 1; down < 8 && right < 8&& boardData.boardSquares[down][right].getTeamOccupied() != currentTeam; down++, right++){
+                            if(boardData.boardSquares[down][right].isOccupied() && boardData.boardSquares[y][x].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[down][right].setOccupied(true);
+                                boardData.boardSquares[down][right].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[down][right].setPieceOccupied("bishop");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,right);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[down][x].setOccupied(true);
+                            boardData.boardSquares[down][x].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[down][x].setPieceOccupied("bishop");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,right);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                    }
+                    if(boardData.boardSquares[y][x].getPieceOccupied() == "knight"){
+                        if(y-2 >= 0 && x-1 >=0){
+                            if(boardData.boardSquares[y-2][x-1].isOccupied() && boardData.boardSquares[y-2][x-1].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y-2][x-1].setOccupied(true);
+                                boardData.boardSquares[y-2][x-1].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y-2][x-1].setPieceOccupied("knight");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-2,x-1);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y-2][x-1].setOccupied(true);
+                            boardData.boardSquares[y-2][x-1].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y-2][x-1].setPieceOccupied("knight");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-2,x-1);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        if(y-2 >= 0 && x+1 < 8){
+                            if(boardData.boardSquares[y-2][x+1].isOccupied() && boardData.boardSquares[y-2][x+1].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y-2][x+1].setOccupied(true);
+                                boardData.boardSquares[y-2][x+1].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y-2][x+1].setPieceOccupied("knight");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-2,x+1);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y-2][x+1].setOccupied(true);
+                            boardData.boardSquares[y-2][x+1].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y-2][x+1].setPieceOccupied("knight");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-2,x+1);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        if(y-1 >= 0 && x-2 >=0){
+                            if(boardData.boardSquares[y-1][x-2].isOccupied() && boardData.boardSquares[y-1][x-2].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y-1][x-2].setOccupied(true);
+                                boardData.boardSquares[y-1][x-2].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y-1][x-2].setPieceOccupied("knight");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-1,x-2);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y-1][x-2].setOccupied(true);
+                            boardData.boardSquares[y-1][x-2].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y-1][x-2].setPieceOccupied("knight");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-1,x-2);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        if(y-1 >= 0 && x+2 < 8){
+                            if(boardData.boardSquares[y-1][x+2].isOccupied() && boardData.boardSquares[y-1][x+2].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y-1][x+2].setOccupied(true);
+                                boardData.boardSquares[y-1][x+2].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y-1][x+2].setPieceOccupied("knight");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-1,x+2);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y-1][x+2].setOccupied(true);
+                            boardData.boardSquares[y-1][x+2].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y-1][x+2].setPieceOccupied("knight");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-1,x+2);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+
+                        if(y+1 < 8 && x-2 >= 0){
+                            if(boardData.boardSquares[y+1][x-2].isOccupied() && boardData.boardSquares[y+1][x-2].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y+1][x-2].setOccupied(true);
+                                boardData.boardSquares[y+1][x-2].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y+1][x-2].setPieceOccupied("knight");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+1,x-2);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y+1][x-2].setOccupied(true);
+                            boardData.boardSquares[y+1][x-2].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y+1][x-2].setPieceOccupied("knight");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+1,x-2);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        if(y+1 < 8 && x+2 < 8){
+                            if(boardData.boardSquares[y+1][x+2].isOccupied() && boardData.boardSquares[y+1][x+2].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y+1][x+2].setOccupied(true);
+                                boardData.boardSquares[y+1][x+2].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y+1][x+2].setPieceOccupied("knight");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+1,x+2);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y+1][x+2].setOccupied(true);
+                            boardData.boardSquares[y+1][x+2].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y+1][x+2].setPieceOccupied("knight");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+1,x+2);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        if(y+2 < 8 && x-1 >= 0){
+                            if(boardData.boardSquares[y+2][x-1].isOccupied() && boardData.boardSquares[y+2][x-1].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y+2][x-1].setOccupied(true);
+                                boardData.boardSquares[y+2][x-1].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y+2][x-1].setPieceOccupied("knight");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+2,x-1);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y+2][x-1].setOccupied(true);
+                            boardData.boardSquares[y+2][x-1].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y+2][x-1].setPieceOccupied("knight");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+2,x-1);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        if(y+2 < 8 && x+1 < 8){
+                            if(boardData.boardSquares[y+2][x+1].isOccupied() && boardData.boardSquares[y+2][x+1].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y+2][x+1].setOccupied(true);
+                                boardData.boardSquares[y+2][x+1].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y+2][x+1].setPieceOccupied("knight");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+2,x+1);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y+2][x+1].setOccupied(true);
+                            boardData.boardSquares[y+2][x+1].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y+2][x+1].setPieceOccupied("knight");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+2,x+1);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                    }
+                    if(boardData.boardSquares[y][x].getPieceOccupied() == "queen"){
+                        for(int left = x - 1; left >= 0 && boardData.boardSquares[y][left].getTeamOccupied() != currentTeam; left--){
+                            if(boardData.boardSquares[y][left].isOccupied() && boardData.boardSquares[y][left].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y][left].setOccupied(true);
+                                boardData.boardSquares[y][left].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y][left].setPieceOccupied("queen");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y,left);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y][left].setOccupied(true);
+                            boardData.boardSquares[y][left].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y][left].setPieceOccupied("queen");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y,left);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int right = x + 1; right < 8 && boardData.boardSquares[y][right].getTeamOccupied() != currentTeam;right++){
+                            if(boardData.boardSquares[y][right].isOccupied() && boardData.boardSquares[y][right].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y][right].setOccupied(true);
+                                boardData.boardSquares[y][right].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y][right].setPieceOccupied("queen");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y,right);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y][right].setOccupied(true);
+                            boardData.boardSquares[y][right].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y][right].setPieceOccupied("queen");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y,right);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int up = y - 1; up >= 0 && boardData.boardSquares[up][x].getTeamOccupied() != currentTeam; up--){
+                            if(boardData.boardSquares[y][x].isOccupied() && boardData.boardSquares[y][x].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[up][x].setOccupied(true);
+                                boardData.boardSquares[up][x].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[up][x].setPieceOccupied("queen");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,y);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[up][x].setOccupied(true);
+                            boardData.boardSquares[up][x].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[up][x].setPieceOccupied("queen");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,x);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int down = y + 1; down < 8 && boardData.boardSquares[down][x].getTeamOccupied() != currentTeam; down++){
+                            if(boardData.boardSquares[down][x].isOccupied() && boardData.boardSquares[y][x].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[down][x].setOccupied(true);
+                                boardData.boardSquares[down][x].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[down][x].setPieceOccupied("queen");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,x);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[down][x].setOccupied(true);
+                            boardData.boardSquares[down][x].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[down][x].setPieceOccupied("queen");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,x);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+
+                        for(int left = x - 1, up = y - 1; left >= 0 && up >= 0 && boardData.boardSquares[y][left].getTeamOccupied() != currentTeam; left--, up--){
+                            if(boardData.boardSquares[up][left].isOccupied() && boardData.boardSquares[up][left].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[up][left].setOccupied(true);
+                                boardData.boardSquares[up][left].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[up][left].setPieceOccupied("queen");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,left);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[up][left].setOccupied(true);
+                            boardData.boardSquares[up][left].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[up][left].setPieceOccupied("queen");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,left);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int right = x + 1, up = y - 1; right < 8 && up >= 0 && boardData.boardSquares[y][right].getTeamOccupied() != currentTeam;right++, up--){
+                            if(boardData.boardSquares[y][right].isOccupied() && boardData.boardSquares[y][right].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[up][right].setOccupied(true);
+                                boardData.boardSquares[up][right].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[up][right].setPieceOccupied("queen");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,right);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y][right].setOccupied(true);
+                            boardData.boardSquares[y][right].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y][right].setPieceOccupied("queen");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,up,right);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int down = y + 1, left = x - 1; down < 8 && left >= 0 && boardData.boardSquares[down][left].getTeamOccupied() != currentTeam; down++, left--){
+                            if(boardData.boardSquares[y][x].isOccupied() && boardData.boardSquares[y][x].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[down][left].setOccupied(true);
+                                boardData.boardSquares[down][left].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[down][left].setPieceOccupied("queen");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,left);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[down][left].setOccupied(true);
+                            boardData.boardSquares[down][left].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[down][left].setPieceOccupied("queen");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,left);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        for(int down = y + 1, right = x + 1; down < 8 && right < 8&& boardData.boardSquares[down][right].getTeamOccupied() != currentTeam; down++, right++){
+                            if(boardData.boardSquares[down][right].isOccupied() && boardData.boardSquares[y][x].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[down][right].setOccupied(true);
+                                boardData.boardSquares[down][right].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[down][right].setPieceOccupied("queen");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,right);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[down][x].setOccupied(true);
+                            boardData.boardSquares[down][x].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[down][x].setPieceOccupied("queen");
+
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,down,right);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                    }
+                    /* if(boardData.boardSquares[y][x].getPieceOccupied() == "king"){
+                        if(y-1 >= 0 && x-1 >=0){
+                            if(boardData.boardSquares[y-1][x-1].isOccupied() && boardData.boardSquares[y-1][x-1].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y-1][x-1].setOccupied(true);
+                                boardData.boardSquares[y-1][x-1].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y-1][x-1].setPieceOccupied("king");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-1,x-1);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y-1][x-1].setOccupied(true);
+                            boardData.boardSquares[y-1][x-1].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y-1][x-1].setPieceOccupied("king");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-1,x-1);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        if(y-1 >= 0 && x+1 <8){
+                            if(boardData.boardSquares[y-1][x-1].isOccupied() && boardData.boardSquares[y-1][x+1].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y-1][x+1].setOccupied(true);
+                                boardData.boardSquares[y-1][x+1].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y-1][x+1].setPieceOccupied("king");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-1,x+1);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y-1][x+1].setOccupied(true);
+                            boardData.boardSquares[y-1][x+1].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y-1][x+1].setPieceOccupied("king");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y-1,x+1);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        if(y+1 < 8 && x-1 >=0){
+                            if(boardData.boardSquares[y+1][x-1].isOccupied() && boardData.boardSquares[y+1][x-1].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y+1][x-1].setOccupied(true);
+                                boardData.boardSquares[y+1][x-1].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y+1][x-1].setPieceOccupied("king");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+1,x-1);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y+1][x-1].setOccupied(true);
+                            boardData.boardSquares[y+1][x-1].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y+1][x-1].setPieceOccupied("king");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+1,x-1);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                        if(y+1 < 8 && x+1 <8){
+                            if(boardData.boardSquares[y+1][x+1].isOccupied() && boardData.boardSquares[y+1][x+1].getTeamOccupied() != currentTeam){
+                                boardData.boardSquares[y][x].setOccupied(false);
+                                boardData.boardSquares[y][x].setTeamOccupied("empty");
+                                boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                                boardData.boardSquares[y+1][x+1].setOccupied(true);
+                                boardData.boardSquares[y+1][x+1].setTeamOccupied(currentTeam);
+                                boardData.boardSquares[y+1][x+1].setPieceOccupied("king");
+                                if(!checkIfChecked()){
+                                    System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+1,x+1);
+                                    revertToPrevious();
+                                    return false;
+                                }
+                                else{
+                                    revertToPrevious();
+
+                                    break;
+                                }
+                            }
+
+                            boardData.boardSquares[y+1][x+1].setOccupied(true);
+                            boardData.boardSquares[y+1][x+1].setTeamOccupied(currentTeam);
+                            boardData.boardSquares[y+1][x+1].setPieceOccupied("king");
+
+                            boardData.boardSquares[y][x].setOccupied(false);
+                            boardData.boardSquares[y][x].setTeamOccupied("empty");
+                            boardData.boardSquares[y][x].setPieceOccupied("empty");
+
+                            if(!checkIfChecked()){
+                                System.out.printf("move (%d, %d) to (%d,%d)\n", y,x,y+1,x+1);
+                                revertToPrevious();
+                                return false;
+                            }
+                            else{
+                                revertToPrevious();
+                            }
+                        }
+                    } */
+                }
+            }
+        }
+
+        return true;
+    }
+
     private boolean isValidMove(int destRow, int destCol) {
 
         //this checks the dest.square if the occupant is from the same team
         if(boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() != boardData.boardSquares[destRow][destCol].getTeamOccupied()){
 
-            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "knight") {
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "knight") {
                     int rowDelta = Math.abs(destRow - currentSelectedY);
                     int colDelta = Math.abs(destCol - currentSelectedX);
                     if ((rowDelta == 1) && (colDelta == 2)) {
@@ -631,7 +1789,7 @@ public class ChessboardGrid extends JFrame {
                     }
 
                 }
-            if ((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "king") {
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "king") {
                     int xDistance = Math.abs(destCol - currentSelectedX);
                     int yDistance = Math.abs(destRow - currentSelectedY);
                     if(xDistance<=1&&yDistance<=1){
@@ -648,7 +1806,7 @@ public class ChessboardGrid extends JFrame {
                 }
 
                 //White Pawns
-            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn"&&boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() == "white"){
+            if((boardData.boardSquares[currentSelectedY][currentSelectedX].getPieceOccupied()) == "pawn" &&boardData.boardSquares[currentSelectedY][currentSelectedX].getTeamOccupied() == "white"){
                     Square p = boardData.boardSquares[destRow][currentSelectedX];
                     if(p.isOccupied() == true && destCol == currentSelectedX && destRow - currentSelectedY == -1){ return false; }
                     int yDistance = Math.abs(destRow - currentSelectedY);
@@ -662,10 +1820,11 @@ public class ChessboardGrid extends JFrame {
                                 }
                             }
                             if(destCol == currentSelectedX){
-                                return true;}
+                                return true;
+                            }
                         }
                     }
-                    if(destRow - currentSelectedY == -1 && currentSelectedX == destCol){
+                    if(destRow - currentSelectedY == -1 && currentSelectedX == destCol && !boardData.boardSquares[destRow][destCol].isOccupied()){
                         return true;
                     }
                     if(destRow - currentSelectedY == -1 && currentSelectedX != destCol) {
@@ -695,7 +1854,8 @@ public class ChessboardGrid extends JFrame {
                                 return true;}
                         }
                     }
-                    if(destRow - currentSelectedY == 1 && currentSelectedX == destCol){
+                    if(destRow - currentSelectedY == 1 && currentSelectedX == destCol  && !boardData.boardSquares[destRow][destCol].isOccupied()
+                    ){
                         return true;
                     }
                     if(destRow - currentSelectedY == 1 && currentSelectedX != destCol) {
