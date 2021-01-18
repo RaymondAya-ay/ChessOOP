@@ -24,10 +24,10 @@ public class GameLog {
         }
     }
     public void log(String team,String piece,int CurrX, int CurrY, int DestX, int DestY){
-        String letters = "ABCDEFGH";
+        char letters[]={'A','B','C','D','E','F','G','H'};
         try{
             FileWriter logmove = new FileWriter("C:\\public\\logs.txt",true);
-            logmove.write(team+" "+piece +" moved from "+ CurrX+","+CurrY+" to "+ DestX+","+DestY+"\n");
+            logmove.write(team+" "+piece +" moved from "+ letters[CurrX]+CurrY+" to "+ letters[DestX]+DestY+"\n");
             logmove.close();
         }
         catch (IOException error){
