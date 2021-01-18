@@ -1,7 +1,9 @@
 package com.chess.graphics;
 import com.chess.board.Board;
+import com.chess.runner.Game;
 import com.chess.squares.Square;
 import com.chess.squares.SquareColor;
+import com.chess.logger.GameLog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +12,7 @@ import javax.swing.ImageIcon;
 
 
 public class ChessboardGrid extends JFrame {
+
 
     private JButton[][] squares = new JButton[8][8];
     private Board boardData = new Board();
@@ -31,7 +34,9 @@ public class ChessboardGrid extends JFrame {
 
     public ChessboardGrid() {
         setTitle("Chess: fite me nub"); //Previous title was "This is a title"
-
+        GameLog logger= new GameLog();
+        logger.createfile();
+        logger.newgame();
         Container contents = getContentPane();
         contents.setLayout(new GridLayout(8, 8));
 
@@ -53,6 +58,7 @@ public class ChessboardGrid extends JFrame {
             }
             currentColor = (currentColor == SquareColor.WHITE) ? SquareColor.BLACK : SquareColor.WHITE;
         } //this generates the board
+
 
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -123,7 +129,8 @@ public class ChessboardGrid extends JFrame {
                     squares[destRow][destCol].setIcon(squares[currentSelectedY][currentSelectedX].getIcon());
                     boardData.boardSquares[currentSelectedY][currentSelectedX].setIconData(null);
                     squares[currentSelectedY][currentSelectedX].setIcon(null);
-
+                    GameLog logger= new GameLog();
+                    logger.log(currentTeam,boardData.boardSquares[destRow][destCol].getPieceOccupied(),currentSelectedX,currentSelectedY,destCol,destRow);
                     if(checkIfChecked()){
                         revertToPrevious();
                         currentTeam = (currentTeam.equals("white"))? "black": "white";
