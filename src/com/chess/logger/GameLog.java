@@ -9,9 +9,12 @@ public class GameLog {
 
     public void createfile(){
         try{
-            File file = new File("C:\\public\\logs.txt");
-            if(file.createNewFile()){
-                System.out.println(file.getName()+" File Created for Game log on "+file.getPath());
+            File file = new File("D:/public");
+            file.mkdir();
+
+            File file1= new File("D:\\public\\logs.txt");
+            if(file1.createNewFile()){
+                System.out.println(file.getName()+" File Created for Game log on "+file1.getPath());
             }
             else{
                 System.out.println("File already Exists");
@@ -26,7 +29,7 @@ public class GameLog {
     public void log(String team,String piece,int CurrX, int CurrY, int DestX, int DestY){
         char letters[]={'A','B','C','D','E','F','G','H'};
         try{
-            FileWriter logmove = new FileWriter("C:\\public\\logs.txt",true);
+            FileWriter logmove = new FileWriter("D:\\public\\logs.txt",true);
             logmove.write(team+" "+piece +" moved from "+ letters[CurrX]+CurrY+" to "+ letters[DestX]+DestY+"\n");
             logmove.close();
         }
@@ -37,7 +40,7 @@ public class GameLog {
     }public void newgame(){
 
         try{
-            FileWriter starter = new FileWriter("C:\\public\\logs.txt",true);
+            FileWriter starter = new FileWriter("D:\\public\\logs.txt",true);
             starter.write("New game started\n");
             starter.close();
         }
