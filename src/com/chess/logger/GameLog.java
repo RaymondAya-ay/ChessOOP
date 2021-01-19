@@ -27,7 +27,7 @@ public class GameLog {
         char letters[]={'A','B','C','D','E','F','G','H'};
         try{
             FileWriter logmove = new FileWriter("C:\\public\\logs.txt",true);
-            logmove.write(team+" "+piece +" moved from "+ letters[CurrX]+CurrY+" to "+ letters[DestX]+DestY+"\n");
+            logmove.write(team+" "+ piece + " moved from " + letters[CurrX]+(CurrY+1)+" to "+ letters[DestX]+(DestY+1)+"\n");
             logmove.close();
         }
         catch (IOException error){
