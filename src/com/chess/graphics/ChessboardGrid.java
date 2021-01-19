@@ -38,11 +38,15 @@ public class ChessboardGrid extends JFrame {
         logger.createfile();
         logger.newgame();
         Container contents = getContentPane();
-        contents.setLayout(new GridLayout(8, 8));
+
+        contents.setLayout(new GridLayout(9,9));
 
         ButtonHandler buttonHandler = new ButtonHandler();
+        JLabel letters = new JLabel("hello");
 
         for (int row = 0; row < 8; row++) {
+            JLabel label = new JLabel(Integer.toString(row+1));
+            contents.add(label);
             for (int col = 0; col < 8; col++) {
                 squares[row][col] = new JButton();
                 if (currentColor == SquareColor.WHITE) {
@@ -59,6 +63,15 @@ public class ChessboardGrid extends JFrame {
             currentColor = (currentColor == SquareColor.WHITE) ? SquareColor.BLACK : SquareColor.WHITE;
         } //this generates the board
 
+        JLabel empty = new JLabel("");
+        contents.add(empty);
+
+        for(int letter = 65; letter < 73; letter++){
+            JLabel label = new JLabel(Character.toString(letter));
+            contents.add(label);
+        }
+
+
 
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -67,6 +80,8 @@ public class ChessboardGrid extends JFrame {
                 }
             }
         }
+
+
 
 
 
