@@ -1,0 +1,2 @@
+New game started
+white pawn moved from C7 to C5

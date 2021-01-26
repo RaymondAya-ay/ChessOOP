@@ -9,7 +9,7 @@ public class GameLog {
 
     public void createfile(){
         try{
-            File file = new File("C:\\public\\logs.txt");
+            File file = new File("./src/com/chess/logger/data/logs.txt");
             if(file.createNewFile()){
                 System.out.println(file.getName()+" File Created for Game log on "+file.getPath());
             }
@@ -26,7 +26,7 @@ public class GameLog {
     public void log(String team,String piece,int CurrX, int CurrY, int DestX, int DestY){
         char letters[]={'A','B','C','D','E','F','G','H'};
         try{
-            FileWriter logmove = new FileWriter("C:\\public\\logs.txt",true);
+            FileWriter logmove = new FileWriter("./src/com/chess/logger/data/logs.txt",true);
             logmove.write(team+" "+ piece + " moved from " + letters[CurrX]+(CurrY+1)+" to "+ letters[DestX]+(DestY+1)+"\n");
             logmove.close();
         }
@@ -37,7 +37,7 @@ public class GameLog {
     }public void newgame(){
 
         try{
-            FileWriter starter = new FileWriter("C:\\public\\logs.txt",true);
+            FileWriter starter = new FileWriter("./src/com/chess/logger/data/logs.txt",true);
             starter.write("New game started\n");
             starter.close();
         }
