@@ -3,6 +3,8 @@ package com.chess.logger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 public class GameLog {
@@ -27,7 +29,7 @@ public class GameLog {
         char letters[]={'A','B','C','D','E','F','G','H'};
         try{
             FileWriter logmove = new FileWriter("./src/com/chess/logger/data/logs.txt",true);
-            logmove.write(team+" "+ piece + " moved from " + letters[CurrX]+(CurrY+1)+" to "+ letters[DestX]+(DestY+1)+"\n");
+            logmove.write(team+" "+piece +" moved from "+ letters[CurrX]+(CurrY+1)+" to "+ letters[DestX]+(DestY+1)+"\n");
             logmove.close();
         }
         catch (IOException error){
@@ -38,7 +40,11 @@ public class GameLog {
 
         try{
             FileWriter starter = new FileWriter("./src/com/chess/logger/data/logs.txt",true);
-            starter.write("New game started\n");
+
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+
+            starter.write("New game started at "+ dtf.format(now) +"\n");
             starter.close();
         }
         catch (IOException error){

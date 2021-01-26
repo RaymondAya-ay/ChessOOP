@@ -2,9 +2,9 @@ package com.chess.menu;
 import com.chess.graphics.ChessboardGrid;
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.*;
-import java.awt.*;
+import com.chess.logger.ReadFromFile;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class Menu extends JFrame {
 
@@ -32,6 +32,17 @@ public class Menu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ChessboardGrid grid = new ChessboardGrid();
+            }
+        });
+
+        history.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    ReadFromFile log = new ReadFromFile();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
             }
         });
     }

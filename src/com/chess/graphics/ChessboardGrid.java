@@ -8,6 +8,8 @@ import com.chess.logger.GameLog;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.ImageIcon;
 
 
@@ -89,7 +91,7 @@ public class ChessboardGrid extends JFrame {
         setResizable(false);
         setLocationRelativeTo(null); //centers window
         setVisible(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }
 
 
@@ -180,13 +182,33 @@ public class ChessboardGrid extends JFrame {
                             JLabel winnerText = new JLabel();
                             if(currentTeam == "black"){
                                 winnerText.setText("CHECKMATE, WHITE WINS!!!");
+
+                                try{
+                                    FileWriter logmove = new FileWriter("./src/com/chess/logger/data/logs.txt",true);
+                                    logmove.write("CHECKMATE, WHITE WINS!!!\n\n\n");
+                                    logmove.close();
+                                }
+                                catch (IOException error){
+                                    System.out.println("Writing on File error occured");
+                                    error.printStackTrace();
+                                }
                             }
                            else{
                                 winnerText.setText("CHECKMATE, BLACK WINS!!!");
+                                try{
+                                    FileWriter logmove = new FileWriter("./src/com/chess/logger/data/logs.txt",true);
+                                    logmove.write("CHECKMATE, BLACK WINS!!!\n\n\n");
+                                    logmove.close();
+                                }
+                                catch (IOException error){
+                                    System.out.println("Writing on File error occured");
+                                    error.printStackTrace();
+                                }
                             }
 
                             panel.add(winnerText);
                             endScreen.add(panel);
+
                         }
                     }
 
