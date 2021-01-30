@@ -1,11 +1,13 @@
 package com.chess.logger;
+
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.FileReader;
+import java.io.IOException;
 
-public class ReadFromFile extends JFrame {
+public class ShowGameHistory extends JFrame {
 
-    public ReadFromFile() throws IOException {
+    public ShowGameHistory() throws IOException {
         FileReader fr = new FileReader("./src/com/chess/logger/data/logs.txt");
 
         Container contents = getContentPane();

@@ -2,7 +2,7 @@ package com.chess.menu;
 import com.chess.graphics.ChessboardGrid;
 import javax.swing.*;
 import java.awt.*;
-import com.chess.logger.ReadFromFile;
+import com.chess.logger.ShowGameHistory;
 import java.awt.event.*;
 import java.io.IOException;
 
@@ -39,7 +39,7 @@ public class Menu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    ReadFromFile log = new ReadFromFile();
+                    ShowGameHistory log = new ShowGameHistory();
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }

@@ -23,3 +23,8 @@ white queen moved from F4 to F2
 CHECKMATE, WHITE WINS!!!
 
 
+New game started at 01/26/2021 21:25:27
+white pawn moved from E7 to E5
+black pawn moved from D2 to D4
+white pawn moved from E5 to D4
+black pawn moved from E2 to E4
